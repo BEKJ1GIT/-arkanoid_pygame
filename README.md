@@ -17,7 +17,7 @@
 
 ## Phases Description:
 
-To look for the additions, seek comments started with "!!!"
+To look for the additions, seek comments started with "!"
 
 1. Open an empty window with PyGame (m)
 1. Add Paddle, that could be controlled by the Player
@@ -38,3 +38,4 @@ To look for the additions, seek comments started with "!!!"
 1. Add more levels
 1. Add `gameover` screen
 1. Add more powerups
+# -arkanoid_pygame
