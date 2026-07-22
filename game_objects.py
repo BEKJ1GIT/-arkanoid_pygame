@@ -7,7 +7,7 @@ pygame.font.init()
 POWERUP_FONT = pygame.font.Font(None, 20)
 
 class Paddle:
-    # ... (This class is unchanged from the previous version)
+    # (This class is unchanged from the previous version)
     def __init__(self, screen_width, screen_height):
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -93,7 +93,7 @@ class Paddle:
 
 
 class Ball:
-    # ... (This class is unchanged from the previous version)
+    # (This class is unchanged from the previous version)
     def __init__(self, screen_width, screen_height):
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -197,7 +197,7 @@ class Brick:
 
 
 class PowerUp:
-    # ... (This class is unchanged from the previous version)
+    # (This class is unchanged from the previous version)
     PROPERTIES = {
         'grow': {'color': (60, 60, 255), 'char': 'G', 'message': 'PADDLE GROW'},
         'laser': {'color': (255, 60, 60), 'char': 'L', 'message': 'LASER CANNONS'},
@@ -226,7 +226,7 @@ class PowerUp:
 
 
 class Laser:
-    # ... (This class is unchanged from the previous version)
+    # (This class is unchanged from the previous version)
     def __init__(self, x, y):
         self.width = 5
         self.height = 15
@@ -240,7 +240,7 @@ class Laser:
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
 
-# !!! PHASE: VISUAL EFFECTS !!!
+# ! PHASE: VISUAL EFFECTS !
 class Particle:
     def __init__(self, x, y, color, min_size, max_size, min_speed, max_speed, gravity):
         self.x = x
@@ -257,7 +257,7 @@ class Particle:
         self.x += self.vx
         self.y += self.vy
         self.vy += self.gravity
-        self.size -= 0.1 # Particles shrink over time
+        self.size -= 0.1 
 
     def draw(self, screen):
         if self.size > 0:
@@ -269,8 +269,8 @@ class Firework:
         self.screen_height = screen_height
         self.x = random.randint(0, screen_width)
         self.y = screen_height
-        self.vy = -random.uniform(8, 12) # Speed of the rocket
-        self.color = (255, 255, 255) # White rocket
+        self.vy = -random.uniform(8, 12) 
+        self.color = (255, 255, 255) 
         self.exploded = False
         self.particles = []
         self.explosion_y = random.uniform(screen_height * 0.2, screen_height * 0.5)
@@ -281,7 +281,7 @@ class Firework:
             if self.y <= self.explosion_y:
                 self.exploded = True
                 explosion_color = (random.randint(50, 255), random.randint(50, 255), random.randint(50, 255))
-                for _ in range(50): # Create 50 particles on explosion
+                for _ in range(50): 
                     self.particles.append(Particle(self.x, self.y, explosion_color, 2, 4, 1, 4, 0.1))
         else:
             for particle in self.particles[:]:
@@ -298,4 +298,4 @@ class Firework:
 
     def is_dead(self):
         return self.exploded and not self.particles
-# !!! END PHASE: VISUAL EFFECTS !!!
+    

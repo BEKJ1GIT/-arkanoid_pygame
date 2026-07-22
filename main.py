@@ -22,10 +22,10 @@ BG_COLOR = pygame.Color('grey12')
 BRICK_COLORS = [(178, 34, 34), (255, 165, 0), (255, 215, 0), (50, 205, 50)]
 
 # --- Game Variables ---
-# !!! PHASE: TITLE SCREEN !!!
+# ! PHASE: TITLE SCREEN !
 # The game now starts on the title screen
 game_state = 'title_screen' 
-# !!! END PHASE: TITLE SCREEN !!!
+# ! END PHASE: TITLE SCREEN !
 score = 0
 lives = 3
 current_level = 1
@@ -35,9 +35,9 @@ message_timer = 0
 firework_timer = 0
 
 # -- Font Setup --
-# !!! PHASE: TITLE SCREEN !!!
+# ! PHASE: TITLE SCREEN !
 title_font = pygame.font.Font(None, 70)
-# !!! END PHASE: TITLE SCREEN !!!
+# ! END PHASE: TITLE SCREEN !
 game_font = pygame.font.Font(None, 40)
 message_font = pygame.font.Font(None, 30)
 
@@ -132,7 +132,7 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.unicode.lower() in ['v', 'м']:
                 toggle_sound()
-            # !!! PHASE: TITLE SCREEN !!!
+            # ! PHASE: TITLE SCREEN !
             if event.key == pygame.K_SPACE:
                 # If on title screen, start the game
                 if game_state == 'title_screen':
@@ -157,7 +157,7 @@ while True:
                 # Launch glued ball
                 elif ball.is_glued:
                     ball.is_glued = False
-            # !!! END PHASE: TITLE SCREEN !!!
+            # ! END PHASE: TITLE SCREEN !
             if event.key == pygame.K_f and paddle.has_laser:
                 lasers.append(Laser(paddle.rect.centerx - 30, paddle.rect.top))
                 lasers.append(Laser(paddle.rect.centerx + 30, paddle.rect.top))
@@ -166,7 +166,7 @@ while True:
     # --- Drawing and Updating based on Game State ---
     screen.fill(BG_COLOR)
 
-    # !!! PHASE: TITLE SCREEN !!!
+    # ! PHASE: TITLE SCREEN !
     if game_state == 'title_screen':
         # Draw the title
         title_surface = title_font.render("ARKANOID", True, (255, 255, 255))
@@ -314,10 +314,9 @@ while True:
         text_rect = text_surface.get_rect(center=(screen_width / 2, screen_height / 2 - 20))
         screen.blit(text_surface, text_rect)
         
-        # !!! PHASE: TITLE SCREEN !!!
-        # The restart message is now consistent
+        # ! PHASE: TITLE SCREEN !
         restart_surface = game_font.render("Press SPACE to return to Title", True, (255, 255, 255))
-        # !!! END PHASE: TITLE SCREEN !!!
+        # ! END PHASE: TITLE SCREEN !
         restart_rect = restart_surface.get_rect(center=(screen_width / 2, screen_height / 2 + 30))
         screen.blit(restart_surface, restart_rect)
 
@@ -334,7 +333,7 @@ while True:
             particles.remove(particle)
     for particle in particles:
         particle.draw(screen)
-    # !!! END PHASE: TITLE SCREEN !!!
+    # ! END PHASE: TITLE SCREEN !
 
     # --- Final Display Update ---
     pygame.display.flip()
