@@ -10,7 +10,7 @@ A modern, highly-polished Arkanoid clone built with Python and PyGame. This vers
 - **Dynamic Paddle Control**: Hit the ball on the edge of the paddle to give it an extreme horizontal speed (`MAX_BALL_SPEED_X`), allowing skilled players to aim at specific bricks.
 - **Brick HP System**: Bricks can take multiple hits depending on their level. Indestructible boundary bricks are also supported.
 - **Centralized Configurations**: All visual settings, physics constants, colors, and speeds are cleanly separated into `settings.py`.
-- **Power-Ups**: Includes Shrink (S), Grow (G), Fast Ball (F), Slow Ball (D), and Extra Life (1).
+- **Power-Ups**: Includes Shrink (S), Grow (G), Fast Ball (F), Slow Ball (D), Extra Life (1), and Laser Paddle (L).
 - **Particle Effects**: Spectacular particle bursts when bricks are destroyed, with customizable lifetimes and speeds.
 - **Levels**: Dynamic generation of multiple levels with varying patterns.
 
@@ -39,6 +39,7 @@ A modern, highly-polished Arkanoid clone built with Python and PyGame. This vers
 ## Controls
 - `Left / Right Arrows`: Move the paddle
 - `Space`: Start the game / Launch the ball
+- `F`: Shoot lasers (when Laser power-up is active)
 - `Mouse Click`: Toggle Sound on/off (Button on the bottom right)
 - `Close Window`: Exit Game
 
@@ -51,4 +52,4 @@ You can easily tweak the game's difficulty and aesthetics by editing `settings.p
 ## What's Next?
 - High Score saving system
 - More complex level designs loaded from files
-- Additional power-ups (e.g., Lasers, Multi-ball)
+- Additional power-ups (e.g., Multi-ball)

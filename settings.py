@@ -40,13 +40,14 @@ BALL_COLOR = WHITE
 TEXT_COLOR = WHITE
 
 # --- Playing Field -------------------------------------------------------------
-BRICK_WIDTH = 60
+BRICK_WIDTH = 80
 BRICK_HEIGHT = 20
-TOP_OFFSET = 60
-FIELD_LEFT = 40
-BRICK_PADDING = 5
-BRICK_COLS = (WIDTH - 2 * FIELD_LEFT) // (BRICK_WIDTH + BRICK_PADDING)
-FIELD_RIGHT = FIELD_LEFT + BRICK_COLS * (BRICK_WIDTH + BRICK_PADDING)
+TOP_OFFSET = 40
+FIELD_LEFT = 0
+BRICK_PADDING_X = 0
+BRICK_PADDING_Y = 5
+BRICK_COLS = (WIDTH - 2 * FIELD_LEFT) // (BRICK_WIDTH + BRICK_PADDING_X)
+FIELD_RIGHT = FIELD_LEFT + BRICK_COLS * (BRICK_WIDTH + BRICK_PADDING_X)
 
 WALL_START_Y = TOP_OFFSET
 
@@ -56,8 +57,14 @@ PADDLE_HEIGHT = 12
 PADDLE_SPEED = 7
 
 BALL_RADIUS = 8
-BALL_SPEED = 6
+BALL_SPEED = 5
 MAX_BALL_SPEED_X = 8
+
+# --- Laser --------------------------------------------------------------------
+LASER_WIDTH = 4
+LASER_HEIGHT = 15
+LASER_SPEED = 10
+LASER_COLOR = RED
 
 # --- Visual Effects -----------------------------------------------------------
 PARTICLE_COUNT = 10

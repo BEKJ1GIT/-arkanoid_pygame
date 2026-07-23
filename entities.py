@@ -20,7 +20,8 @@ class Paddle:
         self.width = self.original_width
         self.power_up_timers = {
             'shrink': 0,
-            'grow': 0
+            'grow': 0,
+            'laser': 0
         }
 
 
@@ -46,10 +47,10 @@ class Paddle:
         if keys[pygame.K_RIGHT]:
             self.rect.x += self.speed
 
-        if self.rect.left < cfg.FIELD_LEFT:
-            self.rect.left = cfg.FIELD_LEFT
-        if self.rect.right > cfg.FIELD_RIGHT:
-            self.rect.right = cfg.FIELD_RIGHT
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.right > self.screen_width:
+            self.rect.right = self.screen_width
             
         self._update_power_ups()
 
@@ -72,6 +73,8 @@ class Paddle:
                 self.rect.width = self.width
                 self.rect.centerx = current_center
             self.power_up_timers['grow'] = duration
+        elif type == 'laser':
+            self.power_up_timers['laser'] = duration
             
     def _update_power_ups(self):
         if self.power_up_timers['shrink'] > 0:
@@ -88,6 +91,8 @@ class Paddle:
                 self.width = self.original_width
                 self.rect.width = self.width
                 self.rect.centerx = current_center
+        if self.power_up_timers['laser'] > 0:
+            self.power_up_timers['laser'] -= 1
 
 
 class Ball:
@@ -237,6 +242,7 @@ class PowerUp:
         'speed_up': {'color': cfg.CYAN, 'char': 'F', 'message': 'FAST BALL'},
         'slow': {'color': cfg.ORANGE, 'char': 'D', 'message': 'SLOW BALL'},
         'extra_life': {'color': cfg.PINK, 'char': '1', 'message': 'EXTRA LIFE'},
+        'laser': {'color': cfg.RED, 'char': 'L', 'message': 'LASER PADDLE'},
     }
     
     def __init__(self, x, y, type):
@@ -256,6 +262,19 @@ class PowerUp:
         text_surf = POWERUP_FONT.render(self.char, True, (255, 255, 255))
         text_rect = text_surf.get_rect(center=self.rect.center)
         screen.blit(text_surf, text_rect)
+
+
+class Laser:
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x - cfg.LASER_WIDTH // 2, y, cfg.LASER_WIDTH, cfg.LASER_HEIGHT)
+        self.color = cfg.LASER_COLOR
+        self.speed_y = -cfg.LASER_SPEED
+
+    def update(self):
+        self.rect.y += self.speed_y
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, self.rect)
 
 
 # ! PHASE: VISUAL EFFECTS !
