@@ -1,6 +1,6 @@
 # PyGame Arkanoid
 
-![image](screenshot.png)
+![image](screenshoot.png)
 
 A modern, highly-polished Arkanoid clone built with Python and PyGame. This version features advanced collision physics, dynamic paddle control, a brick Hit Points (HP) system, and centralized configuration for easy modding.
 
