@@ -60,6 +60,7 @@ class Paddle:
     def activate_power_up(self, type):
         duration = 600
         if type == 'shrink':
+            self.power_up_timers['grow'] = 0
             if self.power_up_timers['shrink'] <= 0:
                 current_center = self.rect.centerx
                 self.width = 60
@@ -67,6 +68,7 @@ class Paddle:
                 self.rect.centerx = current_center
             self.power_up_timers['shrink'] = duration
         elif type == 'grow':
+            self.power_up_timers['shrink'] = 0
             if self.power_up_timers['grow'] <= 0:
                 current_center = self.rect.centerx
                 self.width = 150
@@ -114,6 +116,8 @@ class Ball:
 
     def reset(self):
         self.rect.center = (self.screen_width // 2, self.screen_height // 2)
+        self.exact_x = float(self.rect.x)
+        self.exact_y = float(self.rect.y)
         self.speed_x = self.base_speed * random.choice((1, -1))
         self.speed_y = -self.base_speed
         self.is_fast = False
@@ -138,13 +142,15 @@ class Ball:
                 self.speed_y = self.speed_y * 2
                 self.is_slowed = False
 
-        self.rect.x += self.speed_x
-        self.rect.y += self.speed_y
+        self.exact_x += self.speed_x
+        self.exact_y += self.speed_y
+        self.rect.x = int(self.exact_x)
+        self.rect.y = int(self.exact_y)
 
-        if self.rect.top <= 0:
+        if self.rect.top <= 0 and self.speed_y < 0:
             self.speed_y *= -1
             wall_collision = True
-        if self.rect.left <= 0 or self.rect.right >= self.screen_width:
+        if (self.rect.left <= 0 and self.speed_x < 0) or (self.rect.right >= self.screen_width and self.speed_x > 0):
             self.speed_x *= -1
             wall_collision = True
 
@@ -175,6 +181,9 @@ class Ball:
         elif min_overlap == overlap_right and self.speed_x < 0:
             self.rect.left = rect.right
             self.speed_x *= -1
+            
+        self.exact_x = float(self.rect.x)
+        self.exact_y = float(self.rect.y)
 
     def draw(self, screen):
         pygame.draw.ellipse(screen, self.color, self.rect)
@@ -211,11 +220,13 @@ class Brick:
         self.speed = 1.5 if moving else 0
         self.boundary = 50
         self.start_x = x
+        self.exact_x = float(x)
 
     def update(self):
         if self.moving:
-            self.rect.x += self.direction * self.speed
-            if abs(self.rect.centerx - self.start_x) > self.boundary:
+            self.exact_x += self.direction * self.speed
+            self.rect.x = int(self.exact_x)
+            if abs(self.rect.x - self.start_x) > self.boundary:
                 self.direction *= -1
 
 
