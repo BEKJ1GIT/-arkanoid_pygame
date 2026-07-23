@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import settings as cfg
 
 # Initialize the font module for the power-up letters
 pygame.font.init()
@@ -8,22 +9,20 @@ POWERUP_FONT = pygame.font.Font(None, 20)
 
 class Paddle:
     # (This class is unchanged from the previous version)
-    def __init__(self, screen_width, screen_height):
-        self.screen_width = screen_width
-        self.screen_height = screen_height
-        self.original_width = 100
-        self.height = 10
-        self.speed = 7
-        self.color = (200, 200, 200)
+    def __init__(self):
+        self.screen_width = cfg.WIDTH
+        self.screen_height = cfg.HEIGHT
+        self.original_width = cfg.PADDLE_WIDTH
+        self.height = cfg.PADDLE_HEIGHT
+        self.speed = cfg.PADDLE_SPEED
+        self.color = cfg.PADDLE_COLOR
         
         self.width = self.original_width
         self.power_up_timers = {
-            'grow': 0,
-            'laser': 0,
-            'glue': 0
+            'shrink': 0,
+            'grow': 0
         }
-        self.has_laser = False
-        self.has_glue = False
+
 
         self.rect = pygame.Rect(
             self.screen_width // 2 - self.width // 2,
@@ -36,8 +35,7 @@ class Paddle:
         self.rect.x = self.screen_width // 2 - self.original_width // 2
         self.width = self.original_width
         self.rect.width = self.width
-        self.has_laser = False
-        self.has_glue = False
+
         for power_up in self.power_up_timers:
             self.power_up_timers[power_up] = 0
 
@@ -48,33 +46,41 @@ class Paddle:
         if keys[pygame.K_RIGHT]:
             self.rect.x += self.speed
 
-        if self.rect.left < 0:
-            self.rect.left = 0
-        if self.rect.right > self.screen_width:
-            self.rect.right = self.screen_width
+        if self.rect.left < cfg.FIELD_LEFT:
+            self.rect.left = cfg.FIELD_LEFT
+        if self.rect.right > cfg.FIELD_RIGHT:
+            self.rect.right = cfg.FIELD_RIGHT
             
         self._update_power_ups()
 
     def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
+        pygame.draw.rect(screen, self.color, self.rect, border_radius=5)
         
     def activate_power_up(self, type):
         duration = 600
-        if type == 'grow':
+        if type == 'shrink':
+            if self.power_up_timers['shrink'] <= 0:
+                current_center = self.rect.centerx
+                self.width = 60
+                self.rect.width = self.width
+                self.rect.centerx = current_center
+            self.power_up_timers['shrink'] = duration
+        elif type == 'grow':
             if self.power_up_timers['grow'] <= 0:
                 current_center = self.rect.centerx
                 self.width = 150
                 self.rect.width = self.width
                 self.rect.centerx = current_center
             self.power_up_timers['grow'] = duration
-        elif type == 'laser':
-            self.has_laser = True
-            self.power_up_timers['laser'] = duration
-        elif type == 'glue':
-            self.has_glue = True
-            self.power_up_timers['glue'] = duration
             
     def _update_power_ups(self):
+        if self.power_up_timers['shrink'] > 0:
+            self.power_up_timers['shrink'] -= 1
+            if self.power_up_timers['shrink'] <= 0:
+                current_center = self.rect.centerx
+                self.width = self.original_width
+                self.rect.width = self.width
+                self.rect.centerx = current_center
         if self.power_up_timers['grow'] > 0:
             self.power_up_timers['grow'] -= 1
             if self.power_up_timers['grow'] <= 0:
@@ -82,29 +88,22 @@ class Paddle:
                 self.width = self.original_width
                 self.rect.width = self.width
                 self.rect.centerx = current_center
-        if self.power_up_timers['laser'] > 0:
-            self.power_up_timers['laser'] -= 1
-            if self.power_up_timers['laser'] <= 0:
-                self.has_laser = False
-        if self.power_up_timers['glue'] > 0:
-            self.power_up_timers['glue'] -= 1
-            if self.power_up_timers['glue'] <= 0:
-                self.has_glue = False
 
 
 class Ball:
     # (This class is unchanged from the previous version)
-    def __init__(self, screen_width, screen_height):
-        self.screen_width = screen_width
-        self.screen_height = screen_height
-        self.radius = 10
-        self.color = (200, 200, 200)
+    def __init__(self):
+        self.screen_width = cfg.WIDTH
+        self.screen_height = cfg.HEIGHT
+        self.radius = cfg.BALL_RADIUS
+        self.color = cfg.BALL_COLOR
         self.rect = pygame.Rect(0, 0, self.radius * 2, self.radius * 2)
         
-        self.is_glued = False
+        self.is_fast = False
+        self.fast_timer = 0
         self.is_slowed = False
         self.slow_timer = 0
-        self.base_speed = 6
+        self.base_speed = cfg.BALL_SPEED
         
         self.reset()
 
@@ -112,21 +111,20 @@ class Ball:
         self.rect.center = (self.screen_width // 2, self.screen_height // 2)
         self.speed_x = self.base_speed * random.choice((1, -1))
         self.speed_y = -self.base_speed
-        self.is_glued = False
+        self.is_fast = False
+        self.fast_timer = 0
         self.is_slowed = False
         self.slow_timer = 0
 
-    def update(self, paddle, launch_ball=False):
-        collision_object = None
+    def update(self):
+        wall_collision = False
 
-        if self.is_glued:
-            self.rect.centerx = paddle.rect.centerx
-            self.rect.bottom = paddle.rect.top
-            if launch_ball:
-                self.is_glued = False
-                self.speed_x = self.base_speed * random.choice((1, -1))
-                self.speed_y = -self.base_speed
-            return 'playing', None
+        if self.is_fast:
+            self.fast_timer -= 1
+            if self.fast_timer <= 0:
+                self.speed_x = self.speed_x / 2
+                self.speed_y = self.speed_y / 2
+                self.is_fast = False
 
         if self.is_slowed:
             self.slow_timer -= 1
@@ -140,47 +138,74 @@ class Ball:
 
         if self.rect.top <= 0:
             self.speed_y *= -1
-            collision_object = 'wall'
+            wall_collision = True
         if self.rect.left <= 0 or self.rect.right >= self.screen_width:
             self.speed_x *= -1
-            collision_object = 'wall'
+            wall_collision = True
 
-        if self.rect.colliderect(paddle.rect) and self.speed_y > 0:
-            if paddle.has_glue:
-                self.is_glued = True
-            self.speed_y *= -1
-            collision_object = 'paddle'
-        
         if self.rect.top > self.screen_height:
-            return 'lost', None
+            return 'lost', False
         
-        return 'playing', collision_object
+        return 'playing', wall_collision
+
+    def bounce_off(self, rect: pygame.Rect):
+        # Calculate ball's overlaps and find the smallest one
+        overlap_left = self.rect.right - rect.left
+        overlap_right = rect.right - self.rect.left
+        overlap_top = self.rect.bottom - rect.top
+        overlap_bottom = rect.bottom - self.rect.top
+
+        min_overlap = min(overlap_bottom, overlap_left, overlap_right, overlap_top)
+        
+        # Calculate the Ball's final velocities
+        if min_overlap == overlap_top and self.speed_y > 0:
+            self.rect.bottom = rect.top
+            self.speed_y *= -1
+        elif min_overlap == overlap_bottom and self.speed_y < 0:
+            self.rect.top = rect.bottom
+            self.speed_y *= -1
+        elif min_overlap == overlap_left and self.speed_x > 0:
+            self.rect.right = rect.left
+            self.speed_x *= -1
+        elif min_overlap == overlap_right and self.speed_x < 0:
+            self.rect.left = rect.right
+            self.speed_x *= -1
 
     def draw(self, screen):
         pygame.draw.ellipse(screen, self.color, self.rect)
         
     def activate_power_up(self, type):
         if type == 'slow' and not self.is_slowed:
+            if self.is_fast:
+                self.speed_x /= 2
+                self.speed_y /= 2
+                self.is_fast = False
             self.speed_x /= 2
             self.speed_y /= 2
             self.is_slowed = True
             self.slow_timer = 600
+        elif type == 'speed_up' and not self.is_fast:
+            if self.is_slowed:
+                self.speed_x *= 2
+                self.speed_y *= 2
+                self.is_slowed = False
+            self.speed_x *= 2
+            self.speed_y *= 2
+            self.is_fast = True
+            self.fast_timer = 600
 
 
 class Brick:
-    def __init__(self, x, y, width, height, color, moving=False, indestructible=False):
-        self.rect = pygame.Rect(x, y, width, height)
-        self.color = color
-        self.original_color = color
+    def __init__(self, x, y, hp, moving=False):
+        self.rect = pygame.Rect(x, y, cfg.BRICK_WIDTH, cfg.BRICK_HEIGHT)
+        self.hp = hp
+        self.color = cfg.BRICK_COLORS[min(self.hp, len(cfg.BRICK_COLORS) - 1)]
         self.moving = moving
-        self.indestructible = indestructible
+        self.indestructible = (self.hp == 0)
         self.direction = 1
         self.speed = 1.5 if moving else 0
         self.boundary = 50
         self.start_x = x
-
-        if self.indestructible:
-            self.color = (100, 100, 100)  
 
     def update(self):
         if self.moving:
@@ -191,19 +216,27 @@ class Brick:
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
-        if self.indestructible:
-            pygame.draw.rect(screen, (255, 255, 255), self.rect, 1) 
+        pygame.draw.rect(screen, cfg.DARK_GRAY, self.rect, 2)
+
+    def hit(self):
+        if self.hp > 0:
+            self.hp -= 1
+            if self.hp > 0:
+                self.color = cfg.BRICK_COLORS[min(self.hp, len(cfg.BRICK_COLORS) - 1)]
+                return False
+            return True
+        return False
 
 
 
 class PowerUp:
     # (This class is unchanged from the previous version)
     PROPERTIES = {
-        'grow': {'color': (60, 60, 255), 'char': 'G', 'message': 'PADDLE GROW'},
-        'laser': {'color': (255, 60, 60), 'char': 'L', 'message': 'LASER CANNONS'},
-        'glue': {'color': (60, 255, 60), 'char': 'C', 'message': 'CATCH PADDLE'},
-        'slow': {'color': (255, 165, 0), 'char': 'S', 'message': 'SLOW BALL'},
-        'extra_life': {'color': (255, 105, 180), 'char': '1', 'message': 'EXTRA LIFE'},
+        'shrink': {'color': cfg.RED, 'char': 'S', 'message': 'PADDLE SHRINK'},
+        'grow': {'color': cfg.BLUE if hasattr(cfg, 'BLUE') else (60, 60, 255), 'char': 'G', 'message': 'PADDLE GROW'},
+        'speed_up': {'color': cfg.CYAN, 'char': 'F', 'message': 'FAST BALL'},
+        'slow': {'color': cfg.ORANGE, 'char': 'D', 'message': 'SLOW BALL'},
+        'extra_life': {'color': cfg.PINK, 'char': '1', 'message': 'EXTRA LIFE'},
     }
     
     def __init__(self, x, y, type):
@@ -224,21 +257,6 @@ class PowerUp:
         text_rect = text_surf.get_rect(center=self.rect.center)
         screen.blit(text_surf, text_rect)
 
-
-class Laser:
-    # (This class is unchanged from the previous version)
-    def __init__(self, x, y):
-        self.width = 5
-        self.height = 15
-        self.rect = pygame.Rect(x, y, self.width, self.height)
-        self.color = (255, 255, 0)
-        self.speed_y = -8
-
-    def update(self):
-        self.rect.y += self.speed_y
-
-    def draw(self, screen):
-        pygame.draw.rect(screen, self.color, self.rect)
 
 # ! PHASE: VISUAL EFFECTS !
 class Particle:
@@ -281,8 +299,8 @@ class Firework:
             if self.y <= self.explosion_y:
                 self.exploded = True
                 explosion_color = (random.randint(50, 255), random.randint(50, 255), random.randint(50, 255))
-                for _ in range(50): 
-                    self.particles.append(Particle(self.x, self.y, explosion_color, 2, 4, 1, 4, 0.1))
+                for _ in range(cfg.PARTICLE_COUNT * 5): 
+                    self.particles.append(Particle(self.x, self.y, explosion_color, 2, 4, cfg.PARTICLE_SPEED[0], cfg.PARTICLE_SPEED[1], cfg.PARTICLE_GRAVITY))
         else:
             for particle in self.particles[:]:
                 particle.update()

@@ -1,41 +1,54 @@
-# Arkanoid Game
+# PyGame Arkanoid
 
 ![image](screenshot.png)
 
-## Preparation
+A modern, highly-polished Arkanoid clone built with Python and PyGame. This version features advanced collision physics, dynamic paddle control, a brick Hit Points (HP) system, and centralized configuration for easy modding.
 
-1. Do a Preflight check:
-    1. Python3
-    1. GIT
-1. Clone this git
-1. OSX & Linux: Run `sh install.sh` OR do the Manual Install:
-    1. Create new VENV: `python3 -m venv env`
-    1. Activate your VENV: `sh ./env/bin/activate`
-    1. Install deps: `pip3 install -r requirements.txt`
-1. Go to the working directory: `cd work`
-1. Run the app: `python3 main.py`
+## Key Features
 
-## Phases Description:
+- **Advanced Physics Engine**: The ball features perfect corner and edge collision detection without glitching into bricks.
+- **Dynamic Paddle Control**: Hit the ball on the edge of the paddle to give it an extreme horizontal speed (`MAX_BALL_SPEED_X`), allowing skilled players to aim at specific bricks.
+- **Brick HP System**: Bricks can take multiple hits depending on their level. Indestructible boundary bricks are also supported.
+- **Centralized Configurations**: All visual settings, physics constants, colors, and speeds are cleanly separated into `settings.py`.
+- **Power-Ups**: Includes Shrink (S), Grow (G), Fast Ball (F), Slow Ball (D), and Extra Life (1).
+- **Particle Effects**: Spectacular particle bursts when bricks are destroyed, with customizable lifetimes and speeds.
+- **Levels**: Dynamic generation of multiple levels with varying patterns.
 
-To look for the additions, seek comments started with "!"
+## Installation & Setup
 
-1. Open an empty window with PyGame (m)
-1. Add Paddle, that could be controlled by the Player
-1. Implement Ball and add it to the game scene
-1. Adding Bricks
-1. Add Win / Lose state
-1. Add scoring and lives (m)
-1. Bonuses
-1. Sounds (m)
-1. More bonuses
-1. Messages
-1. Add pixel explosions (and fireworks)
-1. Add Title Screen
+1. **Prerequisites**: Ensure you have `Python 3` and `pip` installed.
+2. **Clone the Repository**:
+   ```bash
+   git clone <repository_url>
+   cd pygame-arkanoid
+   ```
+3. **Set up Virtual Environment** (Optional but Recommended):
+   ```bash
+   python3 -m venv env
+   source env/bin/activate  # On Windows use `env\Scripts\activate`
+   ```
+4. **Install Dependencies**:
+   ```bash
+   pip3 install -r requirements.txt
+   ```
+5. **Run the Game**:
+   ```bash
+   python3 main.py
+   ```
 
-## What's next?
+## Controls
+- `Left / Right Arrows`: Move the paddle
+- `Space`: Start the game / Launch the ball
+- `Mouse Click`: Toggle Sound on/off (Button on the bottom right)
+- `Close Window`: Exit Game
 
-1. Add `mute` button
-1. Add more levels
-1. Add `gameover` screen
-1. Add more powerups
-# -arkanoid_pygame
+## Customizing the Game
+You can easily tweak the game's difficulty and aesthetics by editing `settings.py`. Some fun things to try:
+- Increase `PARTICLE_COUNT` for massive explosions.
+- Change `BALL_SPEED` or `PADDLE_SPEED`.
+- Adjust `FIELD_LEFT` to change the padding around the playing field.
+
+## What's Next?
+- High Score saving system
+- More complex level designs loaded from files
+- Additional power-ups (e.g., Lasers, Multi-ball)
